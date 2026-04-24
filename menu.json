@@ -2,26 +2,26 @@
   {
     "id": 1,
     "name": "經典牛肉堡",
-    "price": 150
+    "price": 120
   },
   {
     "id": 2,
     "name": "起司雙層堡",
-    "price": 180
+    "price": 150
   },
   {
     "id": 3,
     "name": "大份黃金薯條",
-    "price": 65
+    "price": 50
   },
   {
     "id": 4,
     "name": "巧克力奶昔",
-    "price": 80
+    "price": 60
   },
   {
     "id": 5,
     "name": "無糖冰紅茶",
-    "price": 40
+    "price": 30
   }
 ]
