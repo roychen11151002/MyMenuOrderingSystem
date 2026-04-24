@@ -65,6 +65,7 @@ val networkModule = module {
         Retrofit.Builder()
             // .baseUrl("https://github.com")
             .baseUrl("https://raw.githubusercontent.com/roychen11151002/MyMenuOrderingSystem/master/")
+            //github.com/roychen11151002/MyMenuOrderingSystem.git
             .client(get())
             .addConverterFactory(get<Json>().asConverterFactory("application/json".toMediaType()))
             .build()
