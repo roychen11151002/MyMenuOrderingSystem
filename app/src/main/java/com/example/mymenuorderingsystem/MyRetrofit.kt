@@ -38,8 +38,7 @@ data class OrderRequest(
 )
 
 interface MenuApiService {
-    // @GET("menu.json")
-    @GET("gradlew")
+    @GET("menu.json")
     suspend fun fetchMenuItems(): List<MenuItem>
 
     @POST("orders/submit")

@@ -23,11 +23,9 @@ import timber.log.Timber
 
 @Serializable
 data class MenuItem(
-    val id: Int,
-    @SerialName("title")
-    val name: String,
-    @SerialName("userId")
-    val price: Int
+    val id: Int = 0,
+    val name: String = "未知餐點",
+    val price: Int = 0
 )
 
 class MainViewModel(private val repository: MenuRepository) : ViewModel() {
