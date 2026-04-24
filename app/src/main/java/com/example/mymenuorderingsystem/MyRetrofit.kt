@@ -39,7 +39,7 @@ data class OrderRequest(
 
 interface MenuApiService {
     // @GET("menu.json")
-    @GET("local.properties")
+    @GET("gradlew")
     suspend fun fetchMenuItems(): List<MenuItem>
 
     @POST("orders/submit")
@@ -64,7 +64,7 @@ val networkModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://github.com/roychen11151002/iMageM6App/blob/master/")
+            .baseUrl("https://raw.githubusercontent.com/roychen11151002/MyMenuOrderingSystem/master/")
             // .baseUrl("https://github.com")
             .client(get())
             .addConverterFactory(get<Json>().asConverterFactory("application/json".toMediaType()))
