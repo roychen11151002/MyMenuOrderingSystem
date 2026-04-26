@@ -11,15 +11,6 @@ import androidx.room.Query
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
 
-@Entity(tableName = "order_history")
-data class OrderEntity(
-    @PrimaryKey val orderId: String,
-    val note: String,
-    val timestamp: Long = System.currentTimeMillis(),
-    val brandName: String,
-    val status: String = "PENDING"
-)
-
 @Dao
 interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -28,7 +19,7 @@ interface OrderDao {
     @Delete
     suspend fun deleteOrder(order: OrderEntity)
 
-    @Query("SELECT *FROM order_history ORDER BY timestamp DESC")
+    @Query("SELECT * FROM order_history ORDER BY timestamp DESC")
     fun getAllOrders(): Flow<List<OrderEntity>>
 
     @Query("UPDATE order_history SET status = :status WHERE orderId = :orderId")

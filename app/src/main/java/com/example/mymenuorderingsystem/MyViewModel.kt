@@ -7,10 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,17 +21,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import timber.log.Timber
-
-@Serializable
-data class MenuItem(
-    val id: Int = 0,
-    val name: String = "未知餐點",
-    val price: Int = 0
-)
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: MenuRepository) : ViewModel() {
     val customName = BuildConfig.API_NAME
-    val url = BuildConfig.API_URL
     val mode = BuildConfig.API_MODE
 
     private val _cart = mutableStateListOf<MenuItem>()
@@ -65,7 +60,7 @@ class OrderViewModel(
     private val repository: MenuRepository
 ) : ViewModel() {
     private var orderId: String = ""
-    var selectedTable by mutableStateOf("")
+    var selectedTable by mutableStateOf("1")
     var note by mutableStateOf("")
     var isProcessing by mutableStateOf(false)
         private set
@@ -76,13 +71,53 @@ class OrderViewModel(
 
         return "ORD-$timestamp-$randomSuffix"
     }
-    fun placeOrder(onSuccess: () -> Unit) {
+
+    fun placeOrder(
+        context: Context,
+        cartItems: List<MenuItem>,
+        onSuccess: () -> Unit) {
+        if (isProcessing) return
+
+        isProcessing = true
         orderId = generateOrderId()
+        val itemsRequest = cartItems.map { item ->
+            OrderItemRequest(
+                id = item.id,
+                name = item.name,
+                quantity = 1
+            )
+        }
+
+        val totalAmount = cartItems.sumOf { it.price }
+
+        val orderRequest = OrderRequest(
+            orderId = orderId,
+            tableNumber = selectedTable,
+            note = note,
+            totalAmount = totalAmount,
+            items = itemsRequest
+        )
+
         viewModelScope.launch {
-            isProcessing = true
-            delay(2000)
-            isProcessing = false
-            onSuccess()
+            try {
+                // delay(1000)
+
+                val response = repository.submitOrder(orderRequest)
+
+                if (response.status == "success") {
+                // if(true) {
+                    Timber.d("訂單提交成功: ${response.message}")
+                    saveOrderToHistory("MyBrand")
+                    startOrderUpload(context, note)
+                    onSuccess()
+                } else {
+                    Timber.e("伺服器回傳失敗: ${response.message}")
+                }
+            } catch (e: Exception) {
+                Timber.e("提交過程發生錯誤: ${e.message}")
+            } finally {
+                isProcessing = false
+            }
         }
     }
 
@@ -95,10 +130,11 @@ class OrderViewModel(
         val uploadRequest = OneTimeWorkRequestBuilder<OrderUploadWorker>()
             .setInputData(inputData)
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
             .build()
 
         WorkManager.getInstance(context).enqueue(uploadRequest)
-        android.util.Log.d("RoyChen", "訂單已排程, ID: $orderId")
+        Timber.d("訂單已排程, ID: $orderId")
     }
 
     fun saveOrderToHistory(brand: String) {
@@ -112,7 +148,7 @@ class OrderViewModel(
             Timber.d("RoyChen: 訂單已存入 Room: $orderId")
         }
     }
-
+/*
     fun submitOrderToServer(order: OrderRequest) {
         viewModelScope.launch {
             try {
@@ -128,6 +164,7 @@ class OrderViewModel(
             }
         }
     }
+*/
 }
 
 class HistoryViewModel(private val orderDao: OrderDao) : ViewModel() {

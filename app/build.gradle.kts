@@ -50,6 +50,7 @@ android {
         create("HyperNet") {
             dimension = "customer_group"
             buildConfigField("String", "API_URL", "\"https://hypernet.com.tw\"")
+            buildConfigField("String", "API_MENU_URL", "\"https://raw.githubusercontent.com/roychen11151002/MyMenuOrderingSystem/master/\"")
             buildConfigField("String", "API_NAME", "\"HyperNet\"")
             buildConfigField("int", "API_MODE", "10")
             buildConfigField("boolean", "API_SHOW", "true")
@@ -58,6 +59,7 @@ android {
         create("iMageTech") {
             dimension = "customer_group"
             buildConfigField("String", "API_URL", "\"https://imagetech.com.tw\"")
+            buildConfigField("String", "API_MENU_URL", "\"https://raw.githubusercontent.com/\"")
             buildConfigField("String", "API_NAME", "\"iMageTech\"")
             buildConfigField("int", "API_MODE", "60")
             buildConfigField("boolean", "API_SHOW", "false")

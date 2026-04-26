@@ -20,7 +20,14 @@ val appModule = module {
 // roy modify for WorkManager
     single { WorkManager.getInstance(get()) }
 // roy modify for Room
-    single { Room.databaseBuilder(get(), AppDatabase::class.java, "order_db").build() }
+    single {
+        val builder = Room.databaseBuilder(get(), AppDatabase::class.java, "order_db")
+
+        if(BuildConfig.DEBUG) {
+            builder.fallbackToDestructiveMigration(true)
+        }
+        builder.build()
+    }
     single { get<AppDatabase>().orderDao() }
 
     // single<MenuRepository> { MenuRepositoryImpl() }

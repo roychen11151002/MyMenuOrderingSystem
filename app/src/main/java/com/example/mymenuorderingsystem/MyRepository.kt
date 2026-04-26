@@ -1,7 +1,8 @@
 package com.example.mymenuorderingsystem
 
-// roy modify for Repository
+import timber.log.Timber
 
+// roy modify for Repository
 interface MenuRepository {
     suspend fun getMenuItems(): List<MenuItem>
     suspend fun submitOrder(order: OrderRequest): OrderResponse
@@ -12,13 +13,21 @@ class MenuRepositoryImpl(private val apiService: MenuApiService) : MenuRepositor
         return try {
             apiService.fetchMenuItems()
         } catch (e: Exception) {
-            android.util.Log.e("RoyChen", "網路請求失敗: ${ e.message }")
+            Timber.e("網路請求失敗: ${ e.message }")
             emptyList()
         }
     }
 
     override suspend fun submitOrder(order: OrderRequest): OrderResponse {
-        return apiService.submitOrder(order)
+        return try {
+            apiService.submitOrder(order)
+        } catch (e: Exception) {
+            Timber.d("訂單提交失敗: ${e.message}")
+            OrderResponse(
+                status = "error",
+                message = "網路連線失敗，請稍後再試"
+            )
+        }
     }
 }
 

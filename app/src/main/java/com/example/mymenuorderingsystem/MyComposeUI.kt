@@ -198,9 +198,7 @@ fun CheckoutScreen(
 
         Button(
             onClick = {
-                orderVm.placeOrder {
-                    orderVm.startOrderUpload(context, orderVm.note)
-                    orderVm.saveOrderToHistory(mainVm.customName)
+                orderVm.placeOrder(context, mainVm.cart) {
                     mainVm.clearCart()
                     onDone()
                 }
@@ -319,7 +317,9 @@ fun HelpScreen(
 
         Spacer(Modifier.height(20.dp))
 
-        Text(text ="URL: ${ mainVm.url }")
+        Text(text ="customer URL: ${BuildConfig.API_URL }")
+
+        Text(text ="ordering menu URL: ${BuildConfig.API_MENU_URL }")
 
         Text(text ="mode: ${ mainVm.mode }", modifier = Modifier.weight(1f))
 

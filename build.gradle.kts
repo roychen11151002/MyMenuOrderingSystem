@@ -6,5 +6,4 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
 // roy modify for Room
     alias(libs.plugins.kotlin.ksp) apply false
-
 }

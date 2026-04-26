@@ -26,6 +26,7 @@ class OrderUploadWorker(
             showNotification("訂單-[$orderId] 上傳成功", "備註: $note")
             Result.success()
         } catch (e: Exception) {
+            Timber.d("WorkManager: 上傳訂單失敗,準備重試: ${ e.message}")
             Result.retry()
         }
     }

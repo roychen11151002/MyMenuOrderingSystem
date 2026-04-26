@@ -1,7 +1,5 @@
 package com.example.mymenuorderingsystem
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -11,38 +9,18 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
-
-@Serializable
-data class OrderItemRequest(
-    val id: Int,
-    val name: String,
-    val quantity: Int
-)
-
-@Serializable
-data class OrderResponse(
-    val status: String,
-    val message: String,
-    @SerialName("order_timestamp")
-    val orderTimestamp: Long? = null
-)
-
-@Serializable
-data class OrderRequest(
-    val orderId: String,
-    val tableNumber: String,
-    val items: List<OrderItemRequest>,
-    val note: String,
-    val totalAmount: Int
-)
 
 interface MenuApiService {
     @GET("menu.json")
     suspend fun fetchMenuItems(): List<MenuItem>
 
-    @POST("orders/submit")
-    suspend fun submitOrder(@Body order: OrderRequest): OrderResponse
+    @POST("https://webhook.site/1c31346d-ffe1-451d-9ab1-09fa2df6f952")
+    suspend fun submitOrder(
+        @Body order: OrderRequest,
+        @Header("x-api-key") apiKey: String = "000000"
+    ): OrderResponse
 }
 
 val networkModule = module {
@@ -50,6 +28,7 @@ val networkModule = module {
         Json {
             ignoreUnknownKeys = true
             coerceInputValues = true
+            encodeDefaults = true
         }
     }
 
@@ -61,10 +40,10 @@ val networkModule = module {
             .build()
     }
 
-    single {
+    single<MenuApiService> {
         Retrofit.Builder()
             // .baseUrl("https://github.com")
-            .baseUrl("https://raw.githubusercontent.com/roychen11151002/MyMenuOrderingSystem/master/")
+            .baseUrl(BuildConfig.API_MENU_URL)
             //github.com/roychen11151002/MyMenuOrderingSystem.git
             .client(get())
             .addConverterFactory(get<Json>().asConverterFactory("application/json".toMediaType()))
