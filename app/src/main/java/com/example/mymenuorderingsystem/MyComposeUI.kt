@@ -61,6 +61,8 @@ enum class Screen(val route: String) {
 fun OrderSystemApp(modifier: Modifier) {
     val mainVm: MainViewModel = koinViewModel()
     val navController = rememberNavController()
+    val toNavigate: (Screen) -> Unit = { screen -> navController.navigate(screen.route) }
+    val toBack: () -> Unit = { navController.popBackStack(Screen.MENU.route, inclusive = false) }
 
     Box(modifier = modifier) {
         NavHost(
@@ -70,30 +72,30 @@ fun OrderSystemApp(modifier: Modifier) {
             composable(Screen.MENU.route) {
                 MenuScreen(
                     mainVm = mainVm,
-                    onNavigate = { screen -> navController.navigate(screen.route) }         // reference
+                    onNavigate = toNavigate         // reference
                 )
             }
 
             composable(Screen.CHECKOUT.route) {
                 CheckoutScreen(
                     mainVm = mainVm,
-                    onNavigate = { screen -> navController.navigate(screen.route) },         // reference
-                    onDone = { navController.popBackStack(Screen.MENU.route, inclusive = false) }
+                    onNavigate = toNavigate,         // reference
+                    onDone = toBack
                     )
             }
 
             composable(Screen.HISTORY.route) {
                 HistoryScreen(
                     mainVm = mainVm,
-                    onNavigate = { screen -> navController.navigate(screen.route) },         // reference
-                    onBack = { navController.popBackStack() }
+                    onNavigate = toNavigate,         // reference
+                    onBack = toBack
                 )
             }
 
             composable(Screen.HELP.route) {
                 HelpScreen(
                     mainVm = mainVm,
-                    onBack = { navController.popBackStack() }
+                    onBack = toBack
                 )
             }
         }
