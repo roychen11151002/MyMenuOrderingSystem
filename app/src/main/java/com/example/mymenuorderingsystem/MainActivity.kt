@@ -99,28 +99,14 @@ class LineNumberDebugTree : Timber.DebugTree() {
 }
 
 @Composable
-fun MainContent(modifier: Modifier = Modifier) {
-    Surface(modifier = modifier) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter ) {
-            OrderSystemApp()
-        }
-/*
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("This content")
-            Text("Hello World!!")
-            Text("Hello Roy Chen!!")
-        }
-*/
-    }
-}
-
-@Composable
 fun MainScreen() {
     Scaffold(
-        topBar = {MyTopBar()},
-        bottomBar = {MyBottomBar()},
-        floatingActionButton = {MyFAB()}
-    ) { innerPadding -> MainContent(modifier = Modifier.padding(innerPadding).fillMaxSize())
+        topBar = { MyTopBar() },
+        bottomBar = { MyBottomBar() },
+        floatingActionButton = { MyFAB() }
+    ) { innerPadding ->
+// roy modify main content
+        OrderSystemApp(modifier = Modifier.padding(innerPadding).fillMaxSize())
     }
 }
 

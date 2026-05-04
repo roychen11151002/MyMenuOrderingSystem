@@ -26,7 +26,7 @@ interface OrderDao {
     suspend fun updateOrderStatus(orderId: String, status: String)
 }
 
-@Database(entities = [OrderEntity::class], version = 1)
+@Database(entities = [OrderEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
 }

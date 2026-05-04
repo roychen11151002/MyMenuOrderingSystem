@@ -49,7 +49,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.viewmodel.koinActivityViewModel
 
 enum class Screen(val route: String) {
     MENU("menu_page"),
@@ -59,37 +58,44 @@ enum class Screen(val route: String) {
 }
 
 @Composable
-fun OrderSystemApp() {
+fun OrderSystemApp(modifier: Modifier) {
+    val mainVm: MainViewModel = koinViewModel()
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = Screen.MENU.route
-    ) {
-        composable(Screen.MENU.route) {
-            MenuScreen(
-                onNavigate = { screen -> navController.navigate(screen.route) }         // reference
-            )
-        }
-
-        composable(Screen.CHECKOUT.route) {
-            CheckoutScreen(
-                onNavigate = { screen -> navController.navigate(screen.route) },         // reference
-                onDone = { navController.popBackStack(Screen.MENU.route, inclusive = false) }
+    Box(modifier = modifier) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.MENU.route
+        ) {
+            composable(Screen.MENU.route) {
+                MenuScreen(
+                    mainVm = mainVm,
+                    onNavigate = { screen -> navController.navigate(screen.route) }         // reference
                 )
-        }
+            }
 
-        composable(Screen.HISTORY.route) {
-            HistoryScreen(
-                onNavigate = { screen -> navController.navigate(screen.route) },         // reference
-                onBack = { navController.popBackStack() }
-            )
-        }
+            composable(Screen.CHECKOUT.route) {
+                CheckoutScreen(
+                    mainVm = mainVm,
+                    onNavigate = { screen -> navController.navigate(screen.route) },         // reference
+                    onDone = { navController.popBackStack(Screen.MENU.route, inclusive = false) }
+                    )
+            }
 
-        composable(Screen.HELP.route) {
-            HelpScreen(
-                onBack = { navController.popBackStack() }
-            )
+            composable(Screen.HISTORY.route) {
+                HistoryScreen(
+                    mainVm = mainVm,
+                    onNavigate = { screen -> navController.navigate(screen.route) },         // reference
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.HELP.route) {
+                HelpScreen(
+                    mainVm = mainVm,
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
@@ -115,7 +121,7 @@ fun CommonTopBar(onHelpClick: () ->Unit) {
 
 @Composable
 fun MenuScreen(
-    mainVm: MainViewModel = koinActivityViewModel(),
+    mainVm: MainViewModel = koinViewModel(),
     onNavigate : (Screen) -> Unit
 ) {
     Column(Modifier
@@ -155,7 +161,7 @@ fun MenuScreen(
 
 @Composable
 fun CheckoutScreen(
-    mainVm: MainViewModel = koinActivityViewModel(),
+    mainVm: MainViewModel = koinViewModel(),
     onNavigate: (Screen) -> Unit,
     orderVm: OrderViewModel = koinViewModel(),
     onDone: () -> Unit
@@ -238,7 +244,7 @@ fun CheckoutScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
-    mainVm: MainViewModel = koinActivityViewModel(),
+    mainVm: MainViewModel = koinViewModel(),
     onNavigate: (Screen) -> Unit,
     historyVm: HistoryViewModel = koinViewModel(),
     onBack: () -> Unit
@@ -307,7 +313,7 @@ fun HistoryScreen(
 
 @Composable
 fun HelpScreen(
-    mainVm: MainViewModel = koinActivityViewModel(),
+    mainVm: MainViewModel = koinViewModel(),
     onBack: () -> Unit
 ) {
     Column(Modifier
