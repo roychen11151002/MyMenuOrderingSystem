@@ -50,33 +50,40 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 
+/*
 enum class Screen(val route: String) {
     MENU("menu_page"),
     CHECKOUT("checkout_page"),
     HISTORY("history_page"),
     HELP("help_page")
 }
-
+*/
+sealed class Screen(val route: String) {
+    object Menu : Screen("menu_page")
+    object Checkout : Screen("checkout_page")
+    object History : Screen("history_page")
+    object Help : Screen("help_page")
+}
 @Composable
 fun OrderSystemApp(modifier: Modifier) {
     val mainVm: MainViewModel = koinViewModel()
     val navController = rememberNavController()
     val toNavigate: (Screen) -> Unit = { screen -> navController.navigate(screen.route) }
-    val toBack: () -> Unit = { navController.popBackStack(Screen.MENU.route, inclusive = false) }
+    val toBack: () -> Unit = { navController.popBackStack(Screen.Menu.route, inclusive = false) }
 
     Box(modifier = modifier) {
         NavHost(
             navController = navController,
-            startDestination = Screen.MENU.route
+            startDestination = Screen.Menu.route
         ) {
-            composable(Screen.MENU.route) {
+            composable(Screen.Menu.route) {
                 MenuScreen(
                     mainVm = mainVm,
                     onNavigate = toNavigate         // reference
                 )
             }
 
-            composable(Screen.CHECKOUT.route) {
+            composable(Screen.Checkout.route) {
                 CheckoutScreen(
                     mainVm = mainVm,
                     onNavigate = toNavigate,         // reference
@@ -84,7 +91,7 @@ fun OrderSystemApp(modifier: Modifier) {
                     )
             }
 
-            composable(Screen.HISTORY.route) {
+            composable(Screen.History.route) {
                 HistoryScreen(
                     mainVm = mainVm,
                     onNavigate = toNavigate,         // reference
@@ -92,7 +99,7 @@ fun OrderSystemApp(modifier: Modifier) {
                 )
             }
 
-            composable(Screen.HELP.route) {
+            composable(Screen.Help.route) {
                 HelpScreen(
                     mainVm = mainVm,
                     onBack = toBack
@@ -129,7 +136,7 @@ fun MenuScreen(
     Column(Modifier
         .fillMaxSize()
         .padding(8.dp)) {
-        CommonTopBar(onHelpClick = { onNavigate(Screen.HELP) })
+        CommonTopBar(onHelpClick = { onNavigate(Screen.Help) })
 
         Text("歡迎來到 ${mainVm.customName}", style = MaterialTheme.typography.headlineMedium)
 
@@ -149,13 +156,13 @@ fun MenuScreen(
 
         Spacer(Modifier.height(20.dp))
 
-        Button(onClick = { onNavigate(Screen.HISTORY) }, Modifier.fillMaxWidth()) {
+        Button(onClick = { onNavigate(Screen.History) }, Modifier.fillMaxWidth()) {
             Text("歷史訂單紀錄")
         }
 
         Spacer(Modifier.height(20.dp))
 
-        Button(onClick = { onNavigate(Screen.CHECKOUT) }, Modifier.fillMaxWidth()) {
+        Button(onClick = { onNavigate(Screen.Checkout) }, Modifier.fillMaxWidth()) {
             Text("去結帳 (${mainVm.cart.size} 項目)")
         }
     }
@@ -182,7 +189,7 @@ fun CheckoutScreen(
     Column(Modifier
         .fillMaxSize()
         .padding(8.dp)) {
-        CommonTopBar(onHelpClick = { onNavigate(Screen.HELP) })
+        CommonTopBar(onHelpClick = { onNavigate(Screen.Help) })
 
         Text("結帳清單", style = MaterialTheme.typography.headlineMedium)
         // mainVm.cart.forEach { Text("- ${it.name}") }
@@ -256,7 +263,7 @@ fun HistoryScreen(
     Column(Modifier
         .fillMaxSize()
         .padding(8.dp)) {
-        CommonTopBar(onHelpClick = { onNavigate(Screen.HELP) })
+        CommonTopBar(onHelpClick = { onNavigate(Screen.Help) })
 
         Text("歷史訂單紀錄", style = MaterialTheme.typography.headlineMedium)
 
